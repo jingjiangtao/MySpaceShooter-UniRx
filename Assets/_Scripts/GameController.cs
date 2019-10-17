@@ -20,22 +20,22 @@ public class GameController : MonoBehaviour
 
     private Vector3 spawnPosition = Vector3.zero;
     private Quaternion spawnRotation;
-    private int score;
-    private bool gameOver;
-    private bool restart;
+    private IntReactiveProperty score = new IntReactiveProperty(0);
+    private BoolReactiveProperty gameOver = new BoolReactiveProperty(false);
+    private BoolReactiveProperty restart = new BoolReactiveProperty(false);
 
     void Start()
     {
-        score = 0;
-        UpdateScore();
-        gameOverText.text = string.Empty;
-        gameOver = false;
+        // 绑定分数、游戏结束、重新开始的text
+        score.SubscribeToText(scoreText, s => $"得分: {score}");
+        gameOverText.text = string.Empty;        
         restartText.text = string.Empty;
-        restart = false;
+        gameOver.Where(x => x).SubscribeToText(gameOverText, _ => "游戏结束");
+        restart.Where(x => x).SubscribeToText(restartText, _ => "按R键重新开始");
 
         // 生成小行星
         var spawnStream = Observable.Interval(TimeSpan.FromSeconds(spawnWait))
-            .Where(_ => !gameOver)
+            .Where(_ => !gameOver.Value)
             .Do(_ =>
             {
                 spawnPosition.x = Random.Range(-spawnValues.x, spawnValues.x);
@@ -51,27 +51,19 @@ public class GameController : MonoBehaviour
         // 重新开始游戏
         var restartStream = Observable.EveryUpdate()
             .Where(_ => Input.GetKeyDown(KeyCode.R))
-            .Where(_ => restart);
+            .Where(_ => restart.Value);
         restartStream.Subscribe(_ => SceneManager.LoadScene(0));
     }
 
 
     public void AddScore(int newScoreValue)
     {
-        score += newScoreValue;
-        UpdateScore();
-    }
-
-    private void UpdateScore()
-    {
-        scoreText.text = $"得分: {score}";
+        score.Value += newScoreValue;
     }
 
     public void GameOver()
     {
-        gameOver = true;
-        gameOverText.text = "游戏结束";
-        restartText.text = "按R键重新开始";
-        restart = true;
+        gameOver.Value = true;
+        restart.Value = true;
     }
 }
