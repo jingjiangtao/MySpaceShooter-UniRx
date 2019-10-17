@@ -22,7 +22,29 @@ public class GameController : MonoBehaviour
 	private bool gameOver;
 	private bool restart;
 
-	IEnumerator SpawnWaves()
+    void Start()
+    {
+        score = 0;
+        UpdateScore();
+        gameOverText.text = string.Empty;
+        gameOver = false;
+        restartText.text = string.Empty;
+        restart = false;
+        StartCoroutine(SpawnWaves());
+    }
+
+    private void Update()
+    {
+        if (restart)
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SceneManager.LoadScene(0);
+            }
+        }
+    }
+
+    IEnumerator SpawnWaves()
 	{
 		yield return new WaitForSeconds(startWait);
 		while (true)
@@ -40,28 +62,6 @@ public class GameController : MonoBehaviour
 				yield return new WaitForSeconds(spawnWait);
 			}
 			yield return new WaitForSeconds(waveWait);
-		}
-	}
-
-	void Start()
-	{
-		score = 0;
-		UpdateScore();
-		gameOverText.text = string.Empty;
-		gameOver = false;
-		restartText.text = string.Empty;
-		restart = false;
-		StartCoroutine(SpawnWaves());
-	}
-
-	private void Update()
-	{
-		if (restart)
-		{
-			if (Input.GetKeyDown(KeyCode.R))
-			{
-				SceneManager.LoadScene(0);
-			}
 		}
 	}
 

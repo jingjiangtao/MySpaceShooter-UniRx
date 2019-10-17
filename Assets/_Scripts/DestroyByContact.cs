@@ -12,12 +12,12 @@ public class DestroyByContact : MonoBehaviour
 
     private GameController gameController;
 
-    private void Start()
+    private void Init()
     {
         GameObject go = GameObject.FindWithTag("GameController");
         if (go != null)
         {
-            gameController = go.GetComponent<GameController>();
+            gameController = go.GetComponent<GameController>(); // 初始化GameController脚本
         }
         else
         {
@@ -27,10 +27,17 @@ public class DestroyByContact : MonoBehaviour
         {
             Debug.LogError("Can't find GameController.cs script");
         }
+    }
 
+    private void Start()
+    {
+        Init();
+
+        // 子弹碰撞事件
         var boltEnterStream = this.OnTriggerEnterAsObservable()
             .Where(other => other.CompareTag("Bolt"));
 
+        // 飞船碰撞事件
         var playEnterStream = this.OnTriggerEnterAsObservable()
             .Where(other => other.CompareTag("Player"))
             .Do(other =>
@@ -38,12 +45,16 @@ public class DestroyByContact : MonoBehaviour
                 Instantiate(playerExplosion, other.transform.position, other.transform.rotation);
                 gameController.GameOver();
             });
+        
+        // 合并子弹碰撞事件和飞船碰撞事件
         Observable.Merge(boltEnterStream, playEnterStream)
             .Subscribe(other =>
             {
+                // 实例化爆炸粒子，计算分数
                 gameController.AddScore(scoreValue);
                 Instantiate(explosion, transform.position, transform.rotation);
 
+                // 销毁当前小行星和碰撞的物体
                 Destroy(other.gameObject);
                 Destroy(gameObject);
             }).AddTo(this);

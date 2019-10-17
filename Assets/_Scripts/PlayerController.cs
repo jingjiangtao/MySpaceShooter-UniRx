@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        // 监听Fire1按钮事件以发射子弹
         Observable.EveryUpdate()
             .Where(_ => Input.GetButton("Fire1"))
             .ThrottleFirst(TimeSpan.FromSeconds(fireRate))
@@ -31,13 +32,17 @@ public class PlayerController : MonoBehaviour
                 GetComponent<AudioSource>().Play();
             }).AddTo(this);
 
+        // 监听水平按键并获取值
         var moveHorizontalStream = Observable.EveryFixedUpdate()
             .Select(_ => Input.GetAxis("Horizontal"));
+        // 监听垂直按键并获取值
         var moveVerticalStream = Observable.EveryFixedUpdate()
             .Select(_ => Input.GetAxis("Vertical"));
+
+        // 合并水平按键和垂直按键
         var movementStream = moveHorizontalStream.CombineLatest(moveVerticalStream,
             (horizontal, vertical) => new Vector3(horizontal, 0.0f, vertical));
-
+        
         movementStream.Subscribe(movement =>
         {
             Rigidbody rb = GetComponent<Rigidbody>();
