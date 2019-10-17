@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
             {
                 Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
                 GetComponent<AudioSource>().Play();
-            });
+            }).AddTo(this);
 
         var moveHorizontalStream = Observable.EveryFixedUpdate()
             .Select(_ => Input.GetAxis("Horizontal"));
@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
                     0.0f,
                     Mathf.Clamp(rb.position.z, boundary.zMin, boundary.zMax));
             }
-        });
+        }).AddTo(this);
 
     }
 }
