@@ -26,15 +26,17 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        // 绑定分数、游戏结束、重新开始的text
-        score.SubscribeToText(scoreText, s => $"得分: {score}");
+
         gameOverText.text = string.Empty;        
         restartText.text = string.Empty;
+        // 绑定分数、游戏结束、重新开始的text
+        score.SubscribeToText(scoreText, s => $"得分: {score}");
         gameOver.Where(x => x).SubscribeToText(gameOverText, _ => "游戏结束");
         restart.Where(x => x).SubscribeToText(restartText, _ => "按R键重新开始");
 
         // 生成小行星
-        var spawnStream = Observable.Interval(TimeSpan.FromSeconds(spawnWait))
+        var spawnStream = Observable
+            .Interval(TimeSpan.FromSeconds(spawnWait))
             .Where(_ => !gameOver.Value)
             .Do(_ =>
             {
