@@ -47,15 +47,17 @@ public class DestroyByContact : MonoBehaviour
             });
         
         // 合并子弹碰撞事件和飞船碰撞事件
-        Observable.Merge(boltEnterStream, playEnterStream)
-            .Where(other => explosion != null)
+        Observable.Merge(boltEnterStream, playEnterStream)            
             .Subscribe(other =>
             {
                 // 实例化爆炸粒子，计算分数
                 gameController.AddScore(scoreValue);
-                Instantiate(explosion, transform.position, transform.rotation);
+                if(explosion != null)
+                {
+                    Instantiate(explosion, transform.position, transform.rotation);
+                }
 
-                // 销毁当前小行星和碰撞的物体
+                // 销毁当前物体和碰撞的物体
                 Destroy(other.gameObject);
                 Destroy(gameObject);
             }).AddTo(this);
