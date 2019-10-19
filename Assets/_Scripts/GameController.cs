@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 public class GameController : MonoBehaviour
 {
-    public GameObject hazard;
+    public GameObject[] hazards = new GameObject[4];
     public Vector3 spawnValues;
     public int hazardCount;
     public float spawnWait;
@@ -43,7 +43,7 @@ public class GameController : MonoBehaviour
                 spawnPosition.x = Random.Range(-spawnValues.x, spawnValues.x);
                 spawnPosition.z = spawnValues.z;
                 spawnRotation = Quaternion.identity;
-                Instantiate(hazard, spawnPosition, spawnRotation);
+                Instantiate(hazards[Random.Range(0, hazards.Length)], spawnPosition, spawnRotation);
             })
             .Take(hazardCount)
             .Delay(TimeSpan.FromSeconds(waveWait))

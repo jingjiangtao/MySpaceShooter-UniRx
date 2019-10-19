@@ -48,6 +48,7 @@ public class DestroyByContact : MonoBehaviour
         
         // 合并子弹碰撞事件和飞船碰撞事件
         Observable.Merge(boltEnterStream, playEnterStream)
+            .Where(other => explosion != null)
             .Subscribe(other =>
             {
                 // 实例化爆炸粒子，计算分数
